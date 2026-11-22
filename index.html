@@ -184,12 +184,13 @@ show(0);show.ready=true;
 function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]=k in d?[].concat(d[k],v):v});return d}
 f.addEventListener('change',()=>{try{localStorage.setItem('phoneq',JSON.stringify(data()))}catch(e){}});
 
-go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
+go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
  if(!contactOk()){show(0);flag(0);return}
  if(miss.length){const si=steps.findIndex(st=>st.contains(miss[0]));show(si);setTimeout(()=>flag(si),300);hint.textContent=miss.length+' required question(s) still to answer';return}
  const d=data();
  const tw=blocks.reduce((t,b)=>t+ +b.dataset.w,0),aw=blocks.filter(answered).reduce((t,b)=>t+ +b.dataset.w,0),conf=Math.round(aw/tw*100);
- const dec=blocks.filter(b=>b.dataset.w=='5'&&answered(b)).map(b=>{const q=b.querySelector('label.t').firstChild.nextSibling.textContent;const v=[].concat(d[b.dataset.n]??[]).join(', ');return {q,v}});
+ const dec=blocks.filter(b=>b.dataset.w=='5'&&answered(b)).map(b=>{const q=b.querySelector('label.t').firstChild.nextSibling.textContent;const v=[].concat(d[b.dataset.n]??[]).join(', ');return {q,v,k:b.dataset.n}});
+ const top=dec.filter(x=>!['budget','items'].includes(x.k)&&x.v!==d.budget);
  const bud=d.budget?+d.budget:'',warn=[];
  out.style.display='block';out.innerHTML=`<h3 style="margin-top:0">Thank you! Here’s what matters most to you</h3>
  <p><b>Confidence: ${conf}%</b> <span style="color:var(--muted)">(share of total question weight you answered)</span></p>
@@ -198,13 +199,13 @@ go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.f
  out.scrollIntoView({behavior:'smooth'});
  // Save the submission: every question with its weight and answer, plus the computed profile
  const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:+b.dataset.w,a:v.join(', ')}}).filter(r=>r.a);
- const profile={budget:bud,fuel:dec[0]?dec[0].v:'',gearbox:dec[1]?dec[1].v:'',body:dec[2]?dec[2].v:'',confidence:conf,warnings:warn};
+ const profile={budget:bud,fuel:top[0]?top[0].v:'',gearbox:top[1]?top[1].v:'',body:top[2]?top[2].v:'',confidence:conf,warnings:warn};
  saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzx9QS-Ztv9Fzi4sl3MxFpV7VWUe2-ZDmLAPrXets8_3-IV80iUHuw89zU0Dpy3l2I8_g/exec';
-async function saveSub(doc){saved.textContent='Submitting your answers…';
+async function saveSub(doc){saved.textContent='Submitting your answers…';go.disabled=true;go.textContent='Submitting…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
   saved.textContent=`✓ Submitted. We'll email your personalised phone report to ${cemail.value.trim()} shortly.`;showThanks()}
- catch(e){saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
+ catch(e){go.disabled=false;go.textContent='Get my recommendation';saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
 
 // ---- thank-you page + feedback ----
 const PRODUCT='car';
