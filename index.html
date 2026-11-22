@@ -78,6 +78,23 @@ h1,h2,.step-head h2{font-family:'Space Grotesk',Inter,sans-serif}
 .topnav .home{font-size:14px;opacity:.85}.topnav .home:hover{opacity:1}
 .hero .eb{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
 button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
+#thanks{display:none;max-width:760px;margin:10px auto 60px}
+#thanks .tk-hero{text-align:center;padding:36px 20px 10px}
+#thanks .tick{width:68px;height:68px;border-radius:50%;background:var(--ok);color:#fff;font-size:36px;line-height:68px;margin:0 auto 14px}
+#thanks h2{font-family:'Space Grotesk',Inter,sans-serif;font-size:30px;margin:0 0 6px}
+#thanks .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-top:18px}
+#thanks .card h3{margin:0 0 12px;font-size:18px}
+#thanks ol.next{margin:0;padding-left:20px;line-height:1.7}
+#thanks .fq{margin:16px 0}#thanks .fq>b{display:block;margin-bottom:8px;font-size:15px}
+#thanks .stars button{font-size:32px;background:none;border:0;color:#d6dae2;cursor:pointer;padding:0 3px;line-height:1}
+#thanks .stars button.on{color:#f59e0b}
+#thanks .pills{display:flex;flex-wrap:wrap;gap:8px}
+#thanks .pills label{border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:14px;background:#fff}
+#thanks .pills input{display:none}#thanks .pills label:has(input:checked){background:var(--acc-soft);border-color:var(--acc);color:var(--acc);font-weight:600}
+#thanks textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;box-sizing:border-box}
+#thanks .fb-btn{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:600;font-size:15px;cursor:pointer}
+#thanks .fb-err{color:var(--bad);font-size:14px;display:none}
+#thanks .fb-done{display:none;text-align:center;padding:10px 0}
 </style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/phones/"><i>📱</i>Phone Advisor</a><a class="home" href="https://aarjav11-ux.github.io/phones/">← Back to website</a></div></div><main>
 <header class="hero">
 <span class="eb">Phone lene se pehle ek baar</span>
@@ -95,6 +112,28 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 <form id="f"></form>
 <p id="saved"></p>
 <div id="out"></div>
+<section id="thanks">
+<div class="tk-hero"><div class="tick">✓</div><h2 id="tk-h">Thank you!</h2><p style="color:var(--muted);margin:0">Your answers are in. Your consultation has started.</p></div>
+<div class="card"><h3>What happens next</h3><ol class="next">
+<li>We go through your answers, giving the most weight to what matters most to you.</li>
+<li>We match them against our research library and cross-check with a second opinion.</li>
+<li>Your detailed PDF report, with the 3 best-fit options for you, is emailed to <b id="tk-mail"></b>.</li></ol>
+<p style="color:var(--muted);font-size:14px;margin:12px 0 0">Don’t see it? Check your spam or promotions folder.</p></div>
+<div class="card" id="tk-sum"></div>
+<div class="card" id="fb"><h3>How was this for you?</h3><p style="color:var(--muted);margin:0 0 6px;font-size:14px">A minute of feedback helps us improve. Optional.</p>
+<div class="fq"><b>Overall, how would you rate the experience?</b><div class="stars" id="fb-stars"></div></div>
+<div class="fq"><b>How easy were the questions to answer?</b><div class="pills" data-k="ease"></div></div>
+<div class="fq"><b>How did the length feel?</b><div class="pills" data-k="length"></div></div>
+<div class="fq"><b>Were any questions confusing or unclear?</b><div class="pills" data-k="confusing"></div></div>
+<div class="fq"><b>Did the questions cover what matters to you?</b><div class="pills" data-k="coverage"></div></div>
+<div class="fq"><b>Would you recommend this consultation to a friend?</b><div class="pills" data-k="recommend"></div></div>
+<div class="fq"><b>How did you hear about us?</b><div class="pills" data-k="source"></div></div>
+<div class="fq"><b>Anything we should add, remove or improve?</b><textarea id="fb-text" placeholder="e.g. a question that was confusing, something we missed…"></textarea></div>
+<p class="fb-err" id="fb-err">Please pick a star rating first.</p>
+<button type="button" class="fb-btn" id="fb-go">Send feedback</button></div>
+<div class="card fb-done" id="fb-done"><h3 style="margin:0">🙏 Thanks for the feedback!</h3><p style="color:var(--muted);margin:6px 0 0">It goes straight to us and helps make this better.</p></div>
+</section>
+
 </main>
 <nav class="nav"><div class="in"><button type="button" class="ghost" id="back">Back</button><span class="hint" id="hint"></span><button type="button" id="next">Next</button><button id="go" type="button">Get my recommendation</button></div></nav>
 <script>
@@ -164,6 +203,27 @@ go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.f
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzx9QS-Ztv9Fzi4sl3MxFpV7VWUe2-ZDmLAPrXets8_3-IV80iUHuw89zU0Dpy3l2I8_g/exec';
 async function saveSub(doc){saved.textContent='Submitting your answers…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
-  saved.textContent=`✓ Submitted. We'll email your personalised car report to ${cemail.value.trim()} shortly.`}
+  saved.textContent=`✓ Submitted. We'll email your personalised phone report to ${cemail.value.trim()} shortly.`;showThanks()}
  catch(e){saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
+
+// ---- thank-you page + feedback ----
+const PRODUCT='car';
+const FB={ease:['Very easy','Easy','Okay','Difficult'],length:['Too short','Just right','A bit long','Too long'],confusing:['None','A few','Many'],coverage:['Yes, fully','Mostly','Missed some things'],recommend:['Yes','Maybe','No'],source:['WhatsApp','A friend','Social media','Other']};
+document.querySelectorAll('#thanks .pills').forEach(p=>{p.innerHTML=FB[p.dataset.k].map(v=>`<label><input type="radio" name="fb-${p.dataset.k}" value="${v}">${v}</label>`).join('')});
+let fbStar=0;const st=document.getElementById('fb-stars');
+st.innerHTML=[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" aria-label="${n} star${n>1?'s':''}">★</button>`).join('');
+st.onclick=e=>{const n=+e.target.dataset.n;if(!n)return;fbStar=n;[...st.children].forEach(b=>b.classList.toggle('on',+b.dataset.n<=n));document.getElementById('fb-err').style.display='none'};
+function showThanks(){const nm=cname.value.trim().split(' ')[0];
+ document.getElementById('tk-h').textContent=`Thank you${nm?', '+nm:''}!`;document.getElementById('tk-mail').textContent=cemail.value.trim();
+ const sum=document.getElementById('tk-sum');if(out.innerHTML.trim()){sum.innerHTML=out.innerHTML;out.style.display='none';const h=sum.querySelector('h3');if(h)h.textContent='What matters most to you';const l=sum.querySelector('p:last-child');if(l&&/emailed/.test(l.textContent))l.remove()}else sum.style.display='none';
+ document.querySelectorAll('main > *:not(#thanks)').forEach(el=>el.style.display='none');document.querySelector('nav.nav').style.display='none';
+ document.getElementById('thanks').style.display='block';window.scrollTo({top:0,behavior:'smooth'});
+ try{localStorage.removeItem(LSK);localStorage.removeItem(LSK+'-step');localStorage.removeItem(LSK+'-contact')}catch(e){}}
+const LSK='phoneq';
+document.getElementById('fb-go').onclick=async()=>{if(!fbStar){document.getElementById('fb-err').style.display='block';return}
+ const g=k=>(document.querySelector(`[name="fb-${k}"]:checked`)||{}).value||'';
+ const answers=[{n:1,q:'Overall rating (1-5)',w:0,a:String(fbStar)},...Object.keys(FB).map((k,i)=>({n:i+2,q:document.querySelector(`[data-k="${k}"]`).previousElementSibling.textContent,w:0,a:g(k)})),{n:9,q:'Suggestions',w:0,a:document.getElementById('fb-text').value.trim()}].filter(r=>r.a);
+ const b=document.getElementById('fb-go');b.disabled=true;b.textContent='Sending…';
+ try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:'FEEDBACK · '+cname.value.trim(),contact:cemail.value.trim(),profile:{budget:'',fuel:'Rating '+fbStar+'/5',gearbox:'Ease: '+g('ease'),body:'Length: '+g('length'),confidence:'',warnings:[]},answers})})}catch(e){}
+ document.getElementById('fb').style.display='none';document.getElementById('fb-done').style.display='block'};
 </script></body></html>
